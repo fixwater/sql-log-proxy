@@ -1,0 +1,4 @@
+.idea
+*.exe
+backup
+sql-log-proxy
