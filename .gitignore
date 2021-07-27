@@ -2,3 +2,4 @@
 *.exe
 backup
 sql-log-proxy
+exec-release

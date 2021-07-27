@@ -112,6 +112,7 @@ func sql_escape(s string) string {
 	return string(desc[0:j])
 }
 
+//日志
 func proxyLog(src, dst *Conn) {
 	buffer := make([]byte, Bsize)
 	var sqlInfo query
@@ -128,19 +129,23 @@ func proxyLog(src, dst *Conn) {
 			var verboseStr string
 			switch buffer[4] {
 			case comQuit:
-				verboseStr = fmt.Sprintf("From %s To %s; Quit: %s\n", sqlInfo.client, sqlInfo.server, "user quit")
+				//verboseStr = fmt.Sprintf("From %s To %s; Quit: %s\n", sqlInfo.client, sqlInfo.server, "user quit")
+				verboseStr = fmt.Sprintf(" [%s] Quit: %s\n", sqlInfo.client, "user quit")
 				sqlInfo.sqlType = "Quit"
 			case comInitDB:
-				verboseStr = fmt.Sprintf("From %s To %s; schema: use %s\n", sqlInfo.client, sqlInfo.server, string(buffer[5:n]))
+				//verboseStr = fmt.Sprintf("From %s To %s; schema: use %s\n", sqlInfo.client, sqlInfo.server, string(buffer[5:n]))
+				verboseStr = fmt.Sprintf(" [%s] schema: use %s\n", sqlInfo.client, string(buffer[5:n]))
 				sqlInfo.sqlType = "Schema"
 			case comQuery:
-				verboseStr = fmt.Sprintf("From %s To %s; Query: %s\n", sqlInfo.client, sqlInfo.server, string(buffer[5:n]))
+				//verboseStr = fmt.Sprintf("From %s To %s; Query:__|__ %s\n", sqlInfo.client, sqlInfo.server, string(buffer[5:n]))
+				verboseStr = fmt.Sprintf("[%s] Query:__|__ %s\n", sqlInfo.client, sqlInfo.server, string(buffer[5:n]))
 				sqlInfo.sqlType = "Query"
 			//case comFieldList:
 			//	verboseStr = log.Printf("From %s To %s; Table columns list: %s\n", sqlInfo.client, sqlInfo.server, string(buffer[5:n]))
 			//	sqlInfo.sqlType = "Table columns list"
 			case comCreateDB:
-				verboseStr = fmt.Sprintf("From %s To %s; CreateDB: %s\n", sqlInfo.client, sqlInfo.server, string(buffer[5:n]))
+				//verboseStr = fmt.Sprintf("From %s To %s; CreateDB: %s\n", sqlInfo.client, sqlInfo.server, string(buffer[5:n]))
+				verboseStr = fmt.Sprintf("[%s] CreateDB: %s\n", sqlInfo.client, string(buffer[5:n]))
 				sqlInfo.sqlType = "CreateDB"
 			case comDropDB:
 				verboseStr = fmt.Sprintf("From %s To %s; DropDB: %s\n", sqlInfo.client, sqlInfo.server, string(buffer[5:n]))
@@ -149,13 +154,16 @@ func proxyLog(src, dst *Conn) {
 				verboseStr = fmt.Sprintf("From %s To %s; Refresh: %s\n", sqlInfo.client, sqlInfo.server, string(buffer[5:n]))
 				sqlInfo.sqlType = "Refresh"
 			case comStmtPrepare:
-				verboseStr = fmt.Sprintf("From %s To %s; Prepare Query: %s\n", sqlInfo.client, sqlInfo.server, string(buffer[5:n]))
+				//verboseStr = fmt.Sprintf("From %s To %s; Prepare Query: %s\n", sqlInfo.client, sqlInfo.server, string(buffer[5:n]))
+				verboseStr = fmt.Sprintf("[%s] Prepare Query: %s\n", sqlInfo.client, string(buffer[5:n]))
 				sqlInfo.sqlType = "Prepare Query"
 			case comStmtExecute:
-				verboseStr = fmt.Sprintf("From %s To %s; Prepare Args: %s\n", sqlInfo.client, sqlInfo.server, string(buffer[5:n]))
+				//verboseStr = fmt.Sprintf("From %s To %s; Prepare Args: %s\n", sqlInfo.client, sqlInfo.server, string(buffer[5:n]))
+				verboseStr = fmt.Sprintf("[%s] Prepare Args: %s\n", sqlInfo.client, sqlInfo.server, string(buffer[5:n]))
 				sqlInfo.sqlType = "Prepare Args"
 			case comProcessKill:
-				verboseStr = fmt.Sprintf("From %s To %s; Kill: kill conntion %s\n", sqlInfo.client, sqlInfo.server, string(buffer[5:n]))
+				//verboseStr = fmt.Sprintf("From %s To %s; Kill: kill conntion %s\n", sqlInfo.client, sqlInfo.server, string(buffer[5:n]))
+				verboseStr = fmt.Sprintf("[%s] Kill: kill conntion %s\n", sqlInfo.client, string(buffer[5:n]))
 				sqlInfo.sqlType = "Kill"
 			default:
 			}
